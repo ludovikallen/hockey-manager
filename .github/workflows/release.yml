@@ -6,17 +6,18 @@ on:
       version:
         description: 'Version number (e.g., 1.0.0)'
         required: true
-      prerelease:
-        description: 'Is this a prerelease?'
-        type: boolean
-        default: true
+        default: ''
+
+# Add explicit permissions for the workflow
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: write
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+  build-and-release:
+    runs-on: windows-latest
 
     steps:
       - name: Check out Git repository
@@ -26,26 +27,26 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '21' # Adjust according to your Spring Boot version
+          java-version: '21'
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 22
 
+      - name: Update version in package.json
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          $packageJson = Get-Content -Path package.json -Raw | ConvertFrom-Json
+          $packageJson.version = $version
+          $packageJson | ConvertTo-Json -Depth 32 | Set-Content -Path package.json
+        shell: pwsh
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Update version
-        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
-
       - name: Build Spring Boot app
-        run: |
-          if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            ./mvnw.cmd clean package -Pproduction
-          else
-            ./mvnw clean package -Pproduction
-          fi
+        run: ./mvnw.cmd clean package -Pproduction
         shell: bash
 
       - name: Build Electron app
@@ -53,50 +54,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.os }}-build
-          path: |
-            dist/*.dmg
-            dist/*.exe
-            dist/*.AppImage
-            dist/*.snap
-            dist/*.deb
-            dist/*.rpm
-            dist/*.zip
-            dist/*.tar.gz
-            dist/*.yml
-            dist/*.blockmap
-          if-no-files-found: error
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-
-      - name: Display structure of downloaded files
-        run: ls -R
-
-      - name: Create Release
+      # Use softprops/action-gh-release instead of actions/create-release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ github.event.inputs.version }}
           name: Release v${{ github.event.inputs.version }}
-          prerelease: ${{ github.event.inputs.prerelease }}
+          draft: false
+          prerelease: false
           files: |
-            *-build/*.dmg
-            *-build/*.exe
-            *-build/*.AppImage
-            *-build/*.snap
-            *-build/*.deb
-            *-build/*.rpm
-            *-build/*.zip
-            *-build/*.tar.gz
-            *-build/*.yml
-            *-build/*.blockmap
+            dist/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
