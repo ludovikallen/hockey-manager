@@ -4,9 +4,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- Project from https://start.vaadin.com/project/3606d0f5-46d8-4936-873a-f51a1293f85f -->
-    <groupId>com.simulator.application</groupId>
-    <artifactId>simulator</artifactId>
-    <name>simulator</name>
+    <groupId>com.hockeymanager.application</groupId>
+    <artifactId>hockeymanager</artifactId>
+    <name>hockeymanager</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 

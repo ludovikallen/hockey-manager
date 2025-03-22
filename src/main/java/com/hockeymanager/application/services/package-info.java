@@ -1,4 +1,4 @@
 @NonNullApi
-package com.simulator.application.services;
+package com.hockeymanager.application.services;
 
 import org.springframework.lang.NonNullApi;

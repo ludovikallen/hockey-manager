@@ -1,4 +1,4 @@
-package com.simulator.application.services;
+package com.hockeymanager.application.services;
 
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.BrowserCallable;
