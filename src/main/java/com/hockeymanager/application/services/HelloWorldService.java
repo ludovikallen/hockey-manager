@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @AnonymousAllowed
 @Service
 public class HelloWorldService {
-
     public String sayHello(String name) {
         if (name.isEmpty()) {
             return "Hello stranger";

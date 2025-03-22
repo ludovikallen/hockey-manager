@@ -6,19 +6,23 @@ Hockey Manager is a mix between a turn-based strategy game and a hockey manageme
 
 ## Features
 
-- TBD
+-   TBD
 
 ## Getting Started
 
 1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/ludovik/hockey-manager.git
-   cd hockey-manager
-   ```
-2. **Run the Game**
-   ```bash
-   npm start
-   ```
+    ```bash
+    git clone https://github.com/ludovik/hockey-manager.git
+    cd hockey-manager
+    ```
+2. **Install Dependencies (Windows only)**
+    ```bash
+    .\install-deps.ps1
+    ```
+3. **Run the Game**
+    ```bash
+    npm start
+    ```
 
 ## Contributing
 
@@ -26,19 +30,19 @@ We welcome contributions! Feel free to open issues, suggest features, or submit 
 
 ## Roadmap
 
-- Core mechanics: player management, trades, contracts.
+-   Core mechanics: player management, trades, contracts.
 
-- Turn-based decision-making system.
+-   Turn-based decision-making system.
 
-- AI-controlled teams with unique strategies.
+-   AI-controlled teams with unique strategies.
 
-- (Future) Multiplayer mode to compete with friends.
+-   (Future) Multiplayer mode to compete with friends.
 
 ## Community & Support
 
 Join the discussion and contribute to the development by following our project on GitHub and Discord.
 
-- **GitHub Issues** – Report bugs and suggest features.
+-   **GitHub Issues** – Report bugs and suggest features.
 
 ## License
 
