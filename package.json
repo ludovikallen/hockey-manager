@@ -2,8 +2,30 @@
   "name": "hockey-manager",
   "license": "UNLICENSED",
   "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "start": "concurrently \"mvnw\" \"electron .\""
+    "start": "concurrently \"mvnw spring-boot:run -Dspring-boot.run.jvmArguments='-Dspring.datasource.url=jdbc:sqlite:./dev-database.sqlite'\" \"electron .\"",
+    "build": "mvnw clean package -Pproduction",
+    "package": "electron-builder build --publish never",
+    "package:all": "npm run build && npm run package"
+  },
+  "build": {
+    "appId": "com.hockeymanager.application",
+    "productName": "hockeymanager",
+    "files": [ "*.js", "*.html", "*.css", "assets/**/*", "node_modules/**/*" ],
+    "extraResources": [ {
+      "from": "target/hockeymanager-1.0-SNAPSHOT.jar",
+      "to": "app.jar"
+    } ],
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   },
   "main": "main.js",
   "dependencies": {
@@ -57,6 +79,7 @@
     "@vitejs/plugin-react": "4.3.4",
     "async": "3.2.6",
     "electron": "^35.0.3",
+    "electron-builder": "^25.1.8",
     "glob": "11.0.1",
     "prettier": "3.3.3",
     "rollup-plugin-brotli": "3.1.0",
@@ -131,7 +154,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "93ad2315f0da1e3fa697d2b8774d96567291ab2044959963edc2e616bca2aa24"
+    "hash": "6bec98487f98ff46915c1ab3b49eae387bfa019325372f1d27bc99fcce61b162"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",

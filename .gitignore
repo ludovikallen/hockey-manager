@@ -5,3 +5,6 @@ node_modules/
 src/main/frontend/generated/
 vite.generated.ts
 .vscode/.copilot-plugin
+dist/
+src/main/bundles
+dev-database.sqlite
