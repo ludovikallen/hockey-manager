@@ -4,7 +4,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "start": "concurrently \"mvnw spring-boot:run -Dspring-boot.run.jvmArguments='-Dspring.datasource.url=jdbc:sqlite:./dev-database.sqlite'\" \"electron .\"",
+    "start": "mvnw -Dspring-boot.run.jvmArguments='-Dspring.datasource.url=jdbc:sqlite:./dev-database.sqlite'",
+    "postinstall": "node node_modules/electron/install.js",
     "build": "mvnw clean package -Pproduction",
     "package": "electron-builder build --publish never",
     "package:all": "npm run build && npm run package"
@@ -12,19 +13,11 @@
   "build": {
     "appId": "com.hockeymanager.application",
     "productName": "hockeymanager",
-    "files": [
-      "*.js",
-      "*.html",
-      "*.css",
-      "assets/**/*",
-      "node_modules/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "target/hockeymanager-1.0-SNAPSHOT.jar",
-        "to": "app.jar"
-      }
-    ],
+    "files": [ "*.js", "*.html", "*.css", "assets/**/*", "node_modules/**/*" ],
+    "extraResources": [ {
+      "from": "target/hockeymanager-1.0-SNAPSHOT.jar",
+      "to": "app.jar"
+    } ],
     "mac": {
       "category": "public.app-category.developer-tools"
     },
@@ -166,47 +159,52 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "6bec98487f98ff46915c1ab3b49eae387bfa019325372f1d27bc99fcce61b162"
+    "hash": "438ed93bf804e5cef9e58c46a5eb405e7022ec4a61b817d1886f6b07be753aa9"
   },
   "overrides": {
+    "@types/react-dom": "$@types/react-dom",
+    "@types/react": "$@types/react",
+    "@vaadin/hilla-generator-plugin-model": "$@vaadin/hilla-generator-plugin-model",
+    "@vaadin/hilla-generator-plugin-subtypes": "$@vaadin/hilla-generator-plugin-subtypes",
+    "@vaadin/hilla-generator-utils": "$@vaadin/hilla-generator-utils",
+    "@vaadin/hilla-generator-plugin-barrel": "$@vaadin/hilla-generator-plugin-barrel",
+    "@vaadin/hilla-generator-core": "$@vaadin/hilla-generator-core",
+    "@vaadin/hilla-generator-plugin-push": "$@vaadin/hilla-generator-plugin-push",
+    "@vaadin/hilla-generator-plugin-client": "$@vaadin/hilla-generator-plugin-client",
+    "@vaadin/hilla-generator-cli": "$@vaadin/hilla-generator-cli",
+    "@vaadin/hilla-generator-plugin-backbone": "$@vaadin/hilla-generator-plugin-backbone",
+    "@fontsource/ibm-plex-sans": "$@fontsource/ibm-plex-sans",
+    "concurrently": "$concurrently",
+    "eslint": "$eslint",
+    "eslint-config-prettier": "$eslint-config-prettier",
+    "eslint-plugin-prettier": "$eslint-plugin-prettier",
+    "typescript-eslint": "$typescript-eslint",
     "@vaadin/bundles": "$@vaadin/bundles",
     "@vaadin/polymer-legacy-adapter": "$@vaadin/polymer-legacy-adapter",
     "@vaadin/vaadin-development-mode-detector": "$@vaadin/vaadin-development-mode-detector",
     "@vaadin/vaadin-usage-statistics": "$@vaadin/vaadin-usage-statistics",
     "@vaadin/react-components": "$@vaadin/react-components",
+    "@vaadin/react-components-pro": "$@vaadin/react-components-pro",
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "react-dom": "$react-dom",
-    "@types/react-dom": "$@types/react-dom",
-    "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
-    "lit": "$lit",
-    "@types/react": "$@types/react",
-    "@polymer/polymer": "$@polymer/polymer",
-    "react": "$react",
-    "@vaadin/hilla-generator-plugin-model": "$@vaadin/hilla-generator-plugin-model",
-    "@vaadin/hilla-react-crud": "$@vaadin/hilla-react-crud",
-    "@vaadin/hilla-generator-plugin-subtypes": "$@vaadin/hilla-generator-plugin-subtypes",
-    "proj4": "$proj4",
-    "@vaadin/hilla-generator-utils": "$@vaadin/hilla-generator-utils",
-    "@vaadin/hilla-generator-plugin-barrel": "$@vaadin/hilla-generator-plugin-barrel",
-    "@vaadin/hilla-react-form": "$@vaadin/hilla-react-form",
-    "@vaadin/hilla-generator-core": "$@vaadin/hilla-generator-core",
-    "@vaadin/hilla-generator-plugin-push": "$@vaadin/hilla-generator-plugin-push",
-    "@vaadin/hilla-generator-plugin-client": "$@vaadin/hilla-generator-plugin-client",
-    "date-fns": "$date-fns",
-    "@vaadin/hilla-lit-form": "$@vaadin/hilla-lit-form",
-    "@vaadin/hilla-react-auth": "$@vaadin/hilla-react-auth",
-    "@vaadin/hilla-generator-cli": "$@vaadin/hilla-generator-cli",
-    "@vaadin/hilla-generator-plugin-backbone": "$@vaadin/hilla-generator-plugin-backbone",
     "@vaadin/hilla-frontend": "$@vaadin/hilla-frontend",
+    "@vaadin/hilla-react-auth": "$@vaadin/hilla-react-auth",
+    "react": "$react",
+    "react-router": "$react-router",
+    "@vaadin/hilla-react-crud": "$@vaadin/hilla-react-crud",
     "@vaadin/hilla-file-router": "$@vaadin/hilla-file-router",
-    "@vaadin/hilla-react-signals": "$@vaadin/hilla-react-signals",
+    "construct-style-sheets-polyfill": "$construct-style-sheets-polyfill",
     "@vaadin/hilla-react-i18n": "$@vaadin/hilla-react-i18n",
-    "@vaadin/react-components-pro": "$@vaadin/react-components-pro",
+    "lit": "$lit",
+    "@polymer/polymer": "$@polymer/polymer",
+    "@vaadin/hilla-lit-form": "$@vaadin/hilla-lit-form",
+    "@vaadin/hilla-react-form": "$@vaadin/hilla-react-form",
+    "@vaadin/hilla-react-signals": "$@vaadin/hilla-react-signals",
+    "date-fns": "$date-fns",
+    "proj4": "$proj4",
+    "electron": "$electron",
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
-    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles",
-    "react-router": "$react-router",
-    "@fontsource/ibm-plex-sans": "$@fontsource/ibm-plex-sans",
-    "concurrently": "$concurrently"
+    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles"
   }
 }
