@@ -59,9 +59,15 @@ function createMainWindow() {
         },
     });
 
-    mainWindow.removeMenu();
     mainWindow.maximize();
     mainWindow.setFullScreen(true);
+
+    if (!isDev) {
+        mainWindow.removeMenu();
+    } else {
+        mainWindow.setMenuBarVisibility(true);
+        mainWindow.setAutoHideMenuBar(false);
+    }
     mainWindow.loadURL(url);
 
     mainWindow.once('ready-to-show', () => {
