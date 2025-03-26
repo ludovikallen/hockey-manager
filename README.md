@@ -6,7 +6,20 @@ Hockey Manager is a mix between a turn-based strategy game and a hockey manageme
 
 ## Features
 
--   TBD
+- TBD
+
+## Prerequisites
+- Make sure your current terminal is using Java 21 and Maven is also using Java 21
+```bash
+mvn --version
+java --version
+```
+
+- Make sure your Maven packages are clean
+```bash
+mvn dependency:purge-local-repository -D actTransitively=false -D reResolve=false --fail-at-end
+mvn clean install -U
+```
 
 ## Getting Started
 
