@@ -7,6 +7,7 @@ import com.hockeymanager.application.patches.models.PlayerCsv;
 import com.hockeymanager.application.patches.models.TeamCsv;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.BrowserCallable;
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import java.io.File;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class PatchesService {
-    public PatchDto importPatch(@Valid ImportPatchDto patch) {
+    public PatchDto importPatch(@Valid @Nonnull ImportPatchDto patch) {
         try {
             var teamPath = patch.getFolderPath() + "/clubs.csv";
             if (!new File(teamPath).exists()) {

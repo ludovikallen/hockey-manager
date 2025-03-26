@@ -1,5 +1,6 @@
 package com.hockeymanager.application.patches.models;
 
+import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,5 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ImportPatchDto {
     @NotEmpty
+    @Nonnull
     String folderPath;
 }

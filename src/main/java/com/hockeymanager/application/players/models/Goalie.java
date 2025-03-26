@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -17,6 +18,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "goalies")
 public class Goalie extends BaseEntity {
+    private String dynastyId;
+
     private String firstName;
 
     private String lastName;
@@ -41,7 +44,8 @@ public class Goalie extends BaseEntity {
 
     private String nationality;
 
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "team_id")
     private Team team;
 
     @Enumerated(EnumType.STRING)

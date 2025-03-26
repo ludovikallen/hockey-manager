@@ -13,6 +13,6 @@ import lombok.Setter;
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
     @Id
-    @Column(updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
+    @Column(updatable = false, nullable = false, columnDefinition = "TEXT")
+    private String id = UUID.randomUUID().toString();
 }
