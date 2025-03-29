@@ -13,7 +13,7 @@
     "java.checkstyle.modules": ["${workspaceFolder}\\checkstyle.xml"],
     "java.checkstyle.configuration": "${workspaceFolder}\\checkstyle.xml",
     "java.checkstyle.version": "10.21.2",
-    "java.completion.importOrder": ["static ", "", "#"],
+    "java.completion.importOrder": ["#", ""],
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
