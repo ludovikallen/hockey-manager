@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "start": "mvnw -Dspring-boot.run.jvmArguments='-Dspring.datasource.url=jdbc:sqlite:./dev-database.sqlite'",
+    "start": "mvnw -Dspring-boot.run.jvmArguments='-Dspring.profiles.active=dev'",
     "postinstall": "node node_modules/electron/install.js",
     "build": "mvnw clean package -Pproduction",
     "package": "electron-builder build --publish never",
