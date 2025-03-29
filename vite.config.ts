@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite';
 import { exec } from 'child_process';
 import path from 'path';
 import { UserConfigFn } from 'vite';
@@ -10,7 +11,14 @@ const customConfig: UserConfigFn = (configEnv) => {
         exec(electronPath + ' .');
     }
 
-    return {};
+    return {
+        plugins: [tailwindcss()],
+        resolve: {
+            alias: {
+                '@': path.resolve(__dirname, './src/main/frontend'),
+            },
+        },
+    };
 };
 
 export default overrideVaadinConfig(customConfig);
