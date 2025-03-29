@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface GoaliesRepository extends JpaRepository<Goalie, String>, JpaSpecificationExecutor<Goalie> {
     List<Goalie> findAllByTeamId(String teamId);
+
+    void deleteAllByDynastyId(String dynastyId);
 }
