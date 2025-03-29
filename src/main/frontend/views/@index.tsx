@@ -1,33 +1,33 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import CreatingDynastyDialog from '@/components/dynasty/creating-dynasty-dialog';
+import LoadingDynastyDialog from '@/components/dynasty/loading-dynasty-dialog';
+import { RetroGrid } from '@/components/ui/retro-grid';
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
-import { useSignal } from '@vaadin/hilla-react-signals';
-import { HelloWorldService } from 'Frontend/generated/endpoints.js';
-import { toast } from 'sonner';
+import { useState } from 'react';
+import MainGameView from './dynasty';
 
 export const config: ViewConfig = {
     menu: { order: 0, icon: 'line-awesome/svg/globe-solid.svg' },
-    title: 'Hello World',
+    title: 'Main Menu',
 };
 
-export default function HelloWorldView() {
-    const name = useSignal('');
+export default function MainMenuView() {
+    const [dynastyId, setDynastyId] = useState<string | undefined>(undefined);
+
+    if (dynastyId !== undefined) {
+        return <MainGameView dynastyId={dynastyId} setDynastyId={setDynastyId} />;
+    }
 
     return (
-        <section className="flex flex-col gap-4 m-auto">
-            <Label>Your name</Label>
-            <Input
-                placeholder="Ludovik"
-                value={name.value}
-                onInput={(e) => (name.value = e.currentTarget.value)}></Input>
-            <Button
-                onClick={async () => {
-                    const serverResponse = await HelloWorldService.sayHello(name.value);
-                    toast(serverResponse);
-                }}>
-                Say hello
-            </Button>
-        </section>
+        <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background gap-8">
+            <span className="p-10 pointer-events-none z-10 whitespace-pre-wrap text-center text-7xl font-bold leading-none tracking-tighter">
+                Hockey Manager
+            </span>
+            <div className="flex flex-col gap-8 w-60">
+                <CreatingDynastyDialog setDynastyId={setDynastyId} />
+                <LoadingDynastyDialog setDynastyId={setDynastyId} />
+            </div>
+
+            <RetroGrid />
+        </div>
     );
 }

@@ -40,7 +40,10 @@
   "dependencies": {
     "@fontsource/ibm-plex-sans": "4.5.0",
     "@polymer/polymer": "3.5.2",
+    "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-scroll-area": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.2",
     "@tailwindcss/vite": "^4.0.17",
     "@vaadin/bundles": "24.7.1",
@@ -63,6 +66,7 @@
     "@vaadin/vaadin-usage-statistics": "2.1.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "concurrently": "^9.1.2",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
@@ -180,7 +184,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "e9cc6a5179cf02320ac960e8fa58d78c7b9d18e05f84ad1e9f7735f899cfcbf7"
+    "hash": "bf886cc70c74bd7d830a8affced0a4e338db30fc7cf86039a6bdc704a4ff4f0a"
   },
   "overrides": {
     "@types/react-dom": "$@types/react-dom",
@@ -237,6 +241,10 @@
     "sonner": "$sonner",
     "tailwind-merge": "$tailwind-merge",
     "tailwindcss": "$tailwindcss",
-    "tw-animate-css": "$tw-animate-css"
+    "tw-animate-css": "$tw-animate-css",
+    "@radix-ui/react-dialog": "$@radix-ui/react-dialog",
+    "@radix-ui/react-popover": "$@radix-ui/react-popover",
+    "cmdk": "$cmdk",
+    "@radix-ui/react-scroll-area": "$@radix-ui/react-scroll-area"
   }
 }

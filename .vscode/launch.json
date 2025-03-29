@@ -16,6 +16,16 @@
       "name": "Attach to Application started using Maven",
       "hostName": "localhost",
       "port": 5247
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-Application<hockeymanager>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.hockeymanager.application.Application",
+      "projectName": "hockeymanager",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
