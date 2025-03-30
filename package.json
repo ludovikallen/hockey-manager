@@ -13,19 +13,11 @@
   "build": {
     "appId": "com.hockeymanager.application",
     "productName": "hockeymanager",
-    "files": [
-      "*.js",
-      "*.html",
-      "*.css",
-      "assets/**/*",
-      "node_modules/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "target/hockeymanager-1.0-SNAPSHOT.jar",
-        "to": "app.jar"
-      }
-    ],
+    "files": [ "*.js", "*.html", "*.css", "assets/**/*", "node_modules/**/*" ],
+    "extraResources": [ {
+      "from": "target/hockeymanager-1.0-SNAPSHOT.jar",
+      "to": "app.jar"
+    } ],
     "mac": {
       "category": "public.app-category.developer-tools"
     },
@@ -40,6 +32,7 @@
   "dependencies": {
     "@fontsource/ibm-plex-sans": "4.5.0",
     "@polymer/polymer": "3.5.2",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-popover": "^1.1.6",
@@ -184,7 +177,7 @@
       "workbox-core": "7.3.0",
       "workbox-precaching": "7.3.0"
     },
-    "hash": "bf886cc70c74bd7d830a8affced0a4e338db30fc7cf86039a6bdc704a4ff4f0a"
+    "hash": "6402fee7ec9737d8b15097a40d6ec1f15ac704daac79f902ebbb408cd8e6d084"
   },
   "overrides": {
     "@types/react-dom": "$@types/react-dom",
@@ -245,6 +238,7 @@
     "@radix-ui/react-dialog": "$@radix-ui/react-dialog",
     "@radix-ui/react-popover": "$@radix-ui/react-popover",
     "cmdk": "$cmdk",
-    "@radix-ui/react-scroll-area": "$@radix-ui/react-scroll-area"
+    "@radix-ui/react-scroll-area": "$@radix-ui/react-scroll-area",
+    "@radix-ui/react-alert-dialog": "$@radix-ui/react-alert-dialog"
   }
 }

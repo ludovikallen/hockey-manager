@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface TeamsRepository extends JpaRepository<Team, String>, JpaSpecificationExecutor<Team> {
     List<Team> findAllByDynastyId(String dynastyId);
+
+    void deleteAllByDynastyId(String dynastyId);
 }

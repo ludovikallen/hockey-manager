@@ -8,6 +8,7 @@ import com.hockeymanager.application.players.repositories.PlayersRepository;
 import com.hockeymanager.application.teams.repositories.TeamsRepository;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.BrowserCallable;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import java.util.List;
@@ -68,7 +69,14 @@ public class DynastiesService {
     }
 
     public Dynasty findById(String id) {
-        var dynasty = dynastiesRepository.findById(id).orElseThrow(ValidationException::new);
-        return dynasty;
+        return dynastiesRepository.findById(id).orElseThrow(ValidationException::new);
+    }
+
+    @Transactional
+    public void deleteById(String id) {
+        dynastiesRepository.deleteById(id);
+        playersRepository.deleteAllByDynastyId(id);
+        goaliesRepository.deleteAllByDynastyId(id);
+        teamsRepository.deleteAllByDynastyId(id);
     }
 }

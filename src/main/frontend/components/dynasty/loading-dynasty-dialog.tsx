@@ -1,9 +1,16 @@
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import Dynasty from '@/generated/com/hockeymanager/application/dynasties/models/Dynasty';
 import { DynastiesService } from '@/generated/endpoints';
 import { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import DynastyCombobox from './dynasty-combobox';
+import DynastyTable from './dynasty-table';
 
 interface LoadingDynastyDialog {
     setDynastyId: (dynastyId: string) => void;
@@ -39,7 +46,11 @@ export default function LoadingDynastyDialog({ setDynastyId }: LoadingDynastyDia
                     <div className="m-auto">Loading...</div>
                 ) : dynasties.length > 0 ? (
                     <div className="grid gap-4 py-4">
-                        <DynastyCombobox dynasties={dynasties} setSelectedDynastyId={setDynastyId} />
+                        <DynastyTable
+                            dynasties={dynasties}
+                            setSelectedDynastyId={setDynastyId}
+                            setDynasties={setDynasties}
+                        />
                     </div>
                 ) : (
                     <div>No dynasties found.</div>

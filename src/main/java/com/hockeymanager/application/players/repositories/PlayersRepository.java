@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface PlayersRepository extends JpaRepository<Player, String>, JpaSpecificationExecutor<Player> {
     List<Player> findAllByTeamId(String teamId);
+
+    void deleteAllByDynastyId(String dynastyId);
 }
