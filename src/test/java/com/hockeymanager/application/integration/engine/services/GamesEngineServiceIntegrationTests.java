@@ -4,19 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.hockeymanager.application.engine.models.GameResult;
 import com.hockeymanager.application.engine.services.GamesEngineService;
+import com.hockeymanager.application.schedules.services.SchedulesService;
 import com.hockeymanager.application.teams.models.Team;
 import com.hockeymanager.application.teams.repositories.TeamsRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -27,6 +26,9 @@ public class GamesEngineServiceIntegrationTests {
 
     @Autowired
     private TeamsRepository teamsRepository;
+
+    @Autowired
+    private SchedulesService schedulesService;
 
     @Test
     void simulateGameWhenLeafsAndHabsShouldReturnValidScore() {
@@ -54,54 +56,52 @@ public class GamesEngineServiceIntegrationTests {
     }
 
     @Test
-    @Disabled("Only for performance testing purposes")
-    void simulate1000Games(TestReporter testReporter) {
+    @Disabled("This test is used to simulate a season and benchmark the simulation.")
+    void simulate1000Games() {
+        var teams = teamsRepository.findAll();
+        var schedule = schedulesService.generateSchedule(100, teams, 2023);
+
         List<GameResult> gameResults = new ArrayList<>();
         Map<String, Ranking> teamVictories = new HashMap<>();
-        var teams = teamsRepository.findAll();
-        // Mesure time to simulate
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 1312; i++) {
+
+        for (int i = 0; i < schedule.size(); i++) {
             // Arrange
-            Team randomHomeTeam;
-            Team randomAwayTeam;
-            do {
-                randomHomeTeam = teams.get((int) (Math.random() * teams.size()));
-                randomAwayTeam = teams.get((int) (Math.random() * teams.size()));
-            } while (randomHomeTeam.getId() == randomAwayTeam.getId());
+            Team homeTeam = schedule.get(i).getHomeTeam();
+            Team awayTeam = schedule.get(i).getAwayTeam();
 
             // Act
-            GameResult gameResult = gamesEngineService.simulateGame(randomHomeTeam, randomAwayTeam);
-            if (!teamVictories.containsKey(randomHomeTeam.getName())) {
-                teamVictories.put(randomHomeTeam.getName(), new Ranking());
+            GameResult gameResult = gamesEngineService.simulateGame(homeTeam, awayTeam);
+            if (!teamVictories.containsKey(homeTeam.getName())) {
+                teamVictories.put(homeTeam.getName(), new Ranking());
             }
-            if (!teamVictories.containsKey(randomAwayTeam.getName())) {
-                teamVictories.put(randomAwayTeam.getName(), new Ranking());
+            if (!teamVictories.containsKey(awayTeam.getName())) {
+                teamVictories.put(awayTeam.getName(), new Ranking());
             }
             if (gameResult.getHomeScore() > gameResult.getAwayScore()) {
-                var homeTeamRanking = teamVictories.get(randomHomeTeam.getName());
+                var homeTeamRanking = teamVictories.get(homeTeam.getName());
                 homeTeamRanking.setVictories(homeTeamRanking.getVictories() + 1);
                 homeTeamRanking.setGoalsFor(homeTeamRanking.getGoalsFor() + gameResult.getHomeScore());
                 homeTeamRanking.setGoalsAgainst(homeTeamRanking.getGoalsAgainst() + gameResult.getAwayScore());
-                teamVictories.put(randomHomeTeam.getName(), homeTeamRanking);
+                teamVictories.put(homeTeam.getName(), homeTeamRanking);
 
-                var awayTeamRanking = teamVictories.get(randomAwayTeam.getName());
+                var awayTeamRanking = teamVictories.get(awayTeam.getName());
                 awayTeamRanking.setDefeats(awayTeamRanking.getDefeats() + 1);
                 awayTeamRanking.setGoalsFor(awayTeamRanking.getGoalsFor() + gameResult.getAwayScore());
                 awayTeamRanking.setGoalsAgainst(awayTeamRanking.getGoalsAgainst() + gameResult.getHomeScore());
-                teamVictories.put(randomAwayTeam.getName(), awayTeamRanking);
+                teamVictories.put(awayTeam.getName(), awayTeamRanking);
             } else {
-                var awayTeamRanking = teamVictories.get(randomAwayTeam.getName());
+                var awayTeamRanking = teamVictories.get(awayTeam.getName());
                 awayTeamRanking.setVictories(awayTeamRanking.getVictories() + 1);
                 awayTeamRanking.setGoalsFor(awayTeamRanking.getGoalsFor() + gameResult.getAwayScore());
                 awayTeamRanking.setGoalsAgainst(awayTeamRanking.getGoalsAgainst() + gameResult.getHomeScore());
-                teamVictories.put(randomAwayTeam.getName(), awayTeamRanking);
+                teamVictories.put(awayTeam.getName(), awayTeamRanking);
 
-                var homeTeamRanking = teamVictories.get(randomHomeTeam.getName());
+                var homeTeamRanking = teamVictories.get(homeTeam.getName());
                 homeTeamRanking.setDefeats(homeTeamRanking.getDefeats() + 1);
                 homeTeamRanking.setGoalsFor(homeTeamRanking.getGoalsFor() + gameResult.getHomeScore());
                 homeTeamRanking.setGoalsAgainst(homeTeamRanking.getGoalsAgainst() + gameResult.getAwayScore());
-                teamVictories.put(randomHomeTeam.getName(), homeTeamRanking);
+                teamVictories.put(homeTeam.getName(), homeTeamRanking);
             }
             gameResults.add(gameResult);
         }
@@ -110,9 +110,7 @@ public class GamesEngineServiceIntegrationTests {
 
         // Assert
         var biggestScore = gameResults.stream().mapToInt(GameResult::getHomeScore).max().orElseThrow();
-        var smallestScore = gameResults.stream().mapToInt(GameResult::getHomeScore).min().orElseThrow();
         var biggestScore2 = gameResults.stream().mapToInt(GameResult::getAwayScore).max().orElseThrow();
-        var smallestScore2 = gameResults.stream().mapToInt(GameResult::getAwayScore).min().orElseThrow();
         var biggestDifference = gameResults.stream()
                 .mapToInt(gameResult -> Math.abs(gameResult.getHomeScore() - gameResult.getAwayScore())).max()
                 .orElseThrow();
@@ -120,9 +118,6 @@ public class GamesEngineServiceIntegrationTests {
         System.out.println("Biggest difference: " + biggestDifference);
         System.out.println(
                 "Biggest score: " + (biggestScore > biggestScore2 ? biggestScore : biggestScore2));
-        testReporter
-                .publishEntry("small",
-                        "Smallest score: " + (smallestScore < smallestScore2 ? smallestScore : smallestScore2));
         teamVictories.entrySet().stream()
                 .sorted((e1, e2) -> e2.getValue().getVictories() - e1.getValue().getVictories())
                 .forEach(entry -> System.out
