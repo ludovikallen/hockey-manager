@@ -36,7 +36,7 @@ public class GamesEngineService {
         double meanHome = seasonAverageGoalsPerGamePerTeam * 2 * strengthRatioHome;
         double meanAway = seasonAverageGoalsPerGamePerTeam * 2 * strengthRatioAway;
 
-        double stdDev = 1.5; // Ajustable pour plus ou moins de variance
+        double stdDev = 1.66; // Ajustable pour plus ou moins de variance
 
         int homeScore = (int) Math.max(0, Math.round(random.nextGaussian() * stdDev + meanHome));
         int awayScore = (int) Math.max(0, Math.round(random.nextGaussian() * stdDev + meanAway));
