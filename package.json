@@ -13,11 +13,19 @@
   "build": {
     "appId": "com.hockeymanager.application",
     "productName": "hockeymanager",
-    "files": [ "*.js", "*.html", "*.css", "assets/**/*", "node_modules/**/*" ],
-    "extraResources": [ {
-      "from": "target/hockeymanager-1.0-SNAPSHOT.jar",
-      "to": "app.jar"
-    } ],
+    "files": [
+      "*.js",
+      "*.html",
+      "*.css",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "target/hockeymanager-1.0-SNAPSHOT.jar",
+        "to": "app.jar"
+      }
+    ],
     "mac": {
       "category": "public.app-category.developer-tools"
     },

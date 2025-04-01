@@ -7,22 +7,25 @@ import com.hockeymanager.application.patches.models.ImportPatchDto;
 import com.hockeymanager.application.patches.models.PatchDto;
 import com.hockeymanager.application.patches.services.PatchesService;
 import jakarta.validation.ValidationException;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class PatchesServiceIntegrationTest {
-    @Test
-    void shouldImportPatchFromPersistentCsvFiles() throws IOException {
-        // Arrange
-        PatchesService service = new PatchesService();
+    @Autowired
+    private PatchesService patchesService;
 
+    @Test
+    void importPatchWhenValidPatchReturnsValidTeamsPlayersAndGoalies() {
+        // Arrange
         Path path = Paths.get("src/test/resources/patches-test-data");
         ImportPatchDto patch = new ImportPatchDto(path.toFile().getAbsolutePath());
 
         // Act
-        PatchDto result = service.importPatch(patch);
+        PatchDto result = patchesService.importPatch(patch);
 
         // Assert
         var nick = result.getPlayers().stream().filter(t -> t.getFirstName().startsWith("Nick")).findFirst()
@@ -41,7 +44,7 @@ public class PatchesServiceIntegrationTest {
     }
 
     @Test
-    void shouldThrowExceptionIfMissingFile() {
+    void importPatchWhenInvalidPatchPathReturnsError() {
         // Arrange
         PatchesService service = new PatchesService();
         ImportPatchDto patch = new ImportPatchDto("invalid/path");
