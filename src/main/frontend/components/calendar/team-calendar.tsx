@@ -5,14 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Adjust path as needed
 import { Separator } from '@/components/ui/separator';
 import Game from '@/generated/com/hockeymanager/application/schedules/models/Game';
+import GameResult from '@/generated/com/hockeymanager/application/schedules/models/GameResult';
 import Team from '@/generated/com/hockeymanager/application/teams/models/Team';
 import { ScrollArea } from '../ui/scroll-area';
-
-type GameResult = {
-    gameId: string;
-    homeScore: number;
-    awayScore: number;
-};
 
 type ProcessedGame = Game & {
     isPlayed: boolean;
@@ -57,7 +52,7 @@ export function TeamSchedule({
     maxUpcomingGames = 5,
 }: TeamScheduleProps) {
     const processedGames = useMemo(() => {
-        const resultsMap = new Map(gameResults.map((r) => [r.gameId, r]));
+        const resultsMap = new Map(gameResults.map((r) => [r.game?.id, r]));
 
         return allGames
             .filter((game) => game.homeTeam!.id === userTeam.id || game.awayTeam!.id === userTeam.id)
