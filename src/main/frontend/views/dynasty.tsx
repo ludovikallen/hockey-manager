@@ -6,9 +6,9 @@ import Dynasty from '@/generated/com/hockeymanager/application/dynasties/models/
 import Game from '@/generated/com/hockeymanager/application/schedules/models/Game';
 import GameResult from '@/generated/com/hockeymanager/application/schedules/models/GameResult';
 import Team from '@/generated/com/hockeymanager/application/teams/models/Team';
-import { DynastiesService, GameResultsService, GamesService } from '@/generated/endpoints';
+import { DynastiesService, GameResultsService, GamesService, TurnsEngineService } from '@/generated/endpoints';
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 export const config: ViewConfig = {
@@ -120,6 +120,16 @@ function getLeagueStandings(
         });
     }
 
+    leagueStandings.sort((a, b) => {
+        if (a.points !== b.points) {
+            return b.points - a.points;
+        }
+        return b.goalsFor - a.goalsFor;
+    });
+    leagueStandings.forEach((standing, index) => {
+        standing.position = index + 1;
+    });
+
     return leagueStandings;
 }
 
@@ -128,35 +138,36 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
     const [allGamesInSeason, setAllGamesInSeason] = useState<Game[]>([]);
     const [gameResults, setGameResults] = useState<GameResult[]>([]);
     const [leagueStandings, setLeagueStandings] = useState<LeagueStandings[]>([]);
+    const [simulating, setSimulating] = useState(false);
+
+    const fetchDynasty = async () => {
+        const response = await DynastiesService.findById(dynastyId);
+        const games = await GamesService.findAllByTeamId(response?.team?.id);
+        const results = await GameResultsService.findAllByDynastyId(dynastyId);
+        const allGames = await GamesService.findAllByDynastyId(dynastyId);
+
+        const seen = new Set();
+        const teams: Team[] = [];
+        for (const game of allGames!) {
+            if (!seen.has(game.homeTeam?.id)) {
+                seen.add(game.homeTeam?.id);
+                teams.push(game.homeTeam!);
+            }
+            if (!seen.has(game.awayTeam?.id)) {
+                seen.add(game.awayTeam?.id);
+                teams.push(game.awayTeam!);
+            }
+        }
+
+        const standings = getLeagueStandings(teams, allGames!, new Map(results!.map((r) => [r.game?.id, r])));
+        setLeagueStandings(standings);
+
+        setDynasty(response!);
+        setAllGamesInSeason(games!);
+        setGameResults(results!);
+    };
 
     useEffect(() => {
-        const fetchDynasty = async () => {
-            const response = await DynastiesService.findById(dynastyId);
-            const games = await GamesService.findAllByTeamId(response?.team?.id);
-            const results = await GameResultsService.findAllByDynastyId(dynastyId);
-            const allGames = await GamesService.findAllByDynastyId(dynastyId);
-
-            const seen = new Set();
-            const teams: Team[] = [];
-            for (const game of allGames!) {
-                if (!seen.has(game.homeTeam?.id)) {
-                    seen.add(game.homeTeam?.id);
-                    teams.push(game.homeTeam!);
-                }
-                if (!seen.has(game.awayTeam?.id)) {
-                    seen.add(game.awayTeam?.id);
-                    teams.push(game.awayTeam!);
-                }
-            }
-
-            const standings = getLeagueStandings(teams, games!, new Map(results!.map((r) => [r.game?.id, r])));
-            setLeagueStandings(standings);
-
-            setDynasty(response!);
-            setAllGamesInSeason(games!);
-            setGameResults(results!);
-        };
-
         fetchDynasty();
     }, []);
 
@@ -196,6 +207,13 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
             });
     }, [allGamesInSeason, gameResults, dynasty]);
 
+    const handleSimulation = async () => {
+        setSimulating(true);
+        await TurnsEngineService.playTurn(dynasty?.id);
+        await fetchDynasty();
+        setSimulating(false);
+    };
+
     if (dynasty === undefined) {
         return <div className="m-auto">Loading...</div>;
     }
@@ -210,6 +228,15 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
                     }}>
                     <ArrowLeftIcon className="mr-2 h-4 w-4" />
                     Back to Main Menu
+                </Button>
+                <Button
+                    variant="outline"
+                    disabled={simulating}
+                    onClick={() => {
+                        handleSimulation();
+                    }}>
+                    {simulating ? 'Simulating...' : 'Simulate'}
+                    <ArrowRightIcon className="h-4 w-4" />
                 </Button>
             </div>
             <div className="grid grid-cols-4 gap-8 w-full h-full px-8">

@@ -27,7 +27,7 @@ export function TeamSchedule({
             <div className="flex items-center space-x-2">
                 <span className="w-12 text-muted-foreground font-medium">{format(parseISO(game.date!), 'MMM d')}</span>
                 <span>{game.isHomeGame ? 'vs' : '@'}</span>
-                <span className="font-semibold">{game.opponent.abbreviation}</span>
+                <span className="font-semibold">{game.opponent.name}</span>
             </div>
 
             <div>

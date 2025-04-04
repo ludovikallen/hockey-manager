@@ -47,9 +47,9 @@ export function LeagueStanding({ userTeam, leagueStandings }: LeagueStandingProp
                                                     team.team.name
                                                 )}
                                             </TableCell>
+                                            <TableCell className="text-right">{team.gamePlayed}</TableCell>
                                             <TableCell className="text-right">{team.goalsFor}</TableCell>
                                             <TableCell className="text-right">{team.goalsAgainst}</TableCell>
-                                            <TableCell className="text-right">{team.gamePlayed}</TableCell>
                                             <TableCell className="text-right font-medium">{team.points}</TableCell>
                                             <TableCell className="text-right">
                                                 {team.wins}-{team.losses}
