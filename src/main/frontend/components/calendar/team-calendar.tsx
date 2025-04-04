@@ -23,6 +23,7 @@ interface TeamScheduleProps {
     gameResults: GameResult[];
     maxPastGames?: number;
     maxUpcomingGames?: number;
+    currentDate: string;
 }
 
 function getResultInfo(game: Game, result: GameResult, userTeam: Team): { result: 'W' | 'L' | 'T'; score: string } {
@@ -48,8 +49,9 @@ export function TeamSchedule({
     userTeam,
     allGames,
     gameResults,
-    maxPastGames = 3,
-    maxUpcomingGames = 5,
+    maxPastGames = 82,
+    maxUpcomingGames = 82,
+    currentDate,
 }: TeamScheduleProps) {
     const processedGames = useMemo(() => {
         const resultsMap = new Map(gameResults.map((r) => [r.game?.id, r]));
@@ -111,7 +113,10 @@ export function TeamSchedule({
             {' '}
             <CardHeader className="p-3">
                 {' '}
-                <CardTitle className="text-lg"> Game Schedule</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                    <div>Game Schedule</div>
+                    <div className="text-sm text-muted-foreground">{format(parseISO(currentDate), 'MMMM d, yyyy')}</div>
+                </CardTitle>
                 <CardDescription>Recent results and upcoming games</CardDescription>
             </CardHeader>
             <CardContent className="p-3 text-sm">

@@ -39,19 +39,25 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
 
     return (
         <div className="flex h-screen w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background gap-8">
-            <Button
-                className="absolute top-4 left-4"
-                variant="outline"
-                onClick={() => {
-                    setDynastyId(undefined);
-                }}>
-                <ArrowLeftIcon className="mr-2 h-4 w-4" />
-                Back to Main Menu
-            </Button>
-            <div className="grid grid-cols-4 gap-8 w-full h-full p-8">
+            <div className="flex w-full items-center justify-between px-8 py-4">
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        setDynastyId(undefined);
+                    }}>
+                    <ArrowLeftIcon className="mr-2 h-4 w-4" />
+                    Back to Main Menu
+                </Button>
+            </div>
+            <div className="grid grid-cols-4 gap-8 w-full h-full px-8">
                 <div className="col-span-3 flex flex-col items-center justify-center" />
                 <div className="col-span-1 flex flex-col gap-8 justify-between items-end overflow-hidden">
-                    <TeamSchedule userTeam={dynasty.team!} allGames={allGamesInSeason} gameResults={[]} />
+                    <TeamSchedule
+                        userTeam={dynasty.team!}
+                        allGames={allGamesInSeason}
+                        gameResults={[]}
+                        currentDate={dynasty.currentState!.currentDate!}
+                    />
                     <div></div>
                 </div>
             </div>
