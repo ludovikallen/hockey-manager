@@ -5,6 +5,8 @@ import com.hockeymanager.application.dynasties.models.Dynasty;
 import com.hockeymanager.application.dynasties.repositories.DynastiesRepository;
 import com.hockeymanager.application.players.repositories.GoaliesRepository;
 import com.hockeymanager.application.players.repositories.PlayersRepository;
+import com.hockeymanager.application.schedules.repositories.GamesRepository;
+import com.hockeymanager.application.schedules.services.SchedulesService;
 import com.hockeymanager.application.teams.repositories.TeamsRepository;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.BrowserCallable;
@@ -27,11 +29,14 @@ public class DynastiesService {
     private final PlayersRepository playersRepository;
     private final GoaliesRepository goaliesRepository;
     private final TeamsRepository teamsRepository;
+    private final SchedulesService schedulesService;
+    private final GamesRepository gamesRepository;
 
     public List<@NonNull Dynasty> findAll() {
         return dynastiesRepository.findAll();
     }
 
+    @Transactional
     public String create(@Valid CreateDynastyDto dynastyToCreate) {
         Dynasty dynasty = new Dynasty();
 
@@ -43,6 +48,19 @@ public class DynastiesService {
         teamsRepository.saveAll(dynastyToCreate.getTeams());
 
         var teams = teamsRepository.findAllByDynastyId(dynasty.getId());
+
+        var chosenTeam = dynastyToCreate.getTeams().stream().filter(x -> x.getId().equals(dynastyToCreate.getTeamId()))
+                .findFirst().orElseThrow(ValidationException::new);
+
+        dynasty.setTeam(chosenTeam);
+
+        dynastiesRepository.save(dynasty);
+
+        var games = schedulesService.generateSchedule(10, teams, 2023);
+        games.forEach(game -> {
+            game.setDynastyId(dynasty.getId());
+        });
+        gamesRepository.saveAll(games);
 
         dynastyToCreate.getPlayers().forEach(player -> {
             player.setDynastyId(dynasty.getId());
@@ -57,13 +75,6 @@ public class DynastiesService {
                     .findFirst().orElseThrow(ValidationException::new));
         });
         goaliesRepository.saveAll(dynastyToCreate.getGoalies());
-
-        var choosenTeam = dynastyToCreate.getTeams().stream().filter(x -> x.getId().equals(dynastyToCreate.getTeamId()))
-                .findFirst().orElseThrow(ValidationException::new);
-
-        dynasty.setTeam(choosenTeam);
-
-        dynastiesRepository.save(dynasty);
 
         return dynasty.getId();
     }
