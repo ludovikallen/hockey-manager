@@ -19,4 +19,8 @@ public class GamesService {
     public List<@NonNull Game> findAllByTeamId(String teamId) {
         return gamesRepository.findAllByTeamId(teamId);
     }
+
+    public List<@NonNull Game> findAllByDynastyId(String dynastyId) {
+        return gamesRepository.findAllByDynastyId(dynastyId);
+    }
 }

@@ -2,6 +2,7 @@ package com.hockeymanager.application.dynasties.services;
 
 import com.hockeymanager.application.dynasties.models.CreateDynastyDto;
 import com.hockeymanager.application.dynasties.models.Dynasty;
+import com.hockeymanager.application.dynasties.models.DynastyState;
 import com.hockeymanager.application.dynasties.repositories.DynastiesRepository;
 import com.hockeymanager.application.players.repositories.GoaliesRepository;
 import com.hockeymanager.application.players.repositories.PlayersRepository;
@@ -13,6 +14,7 @@ import com.vaadin.hilla.BrowserCallable;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -41,6 +43,9 @@ public class DynastiesService {
         Dynasty dynasty = new Dynasty();
 
         dynasty.setName(dynastyToCreate.getName());
+        var dynastyState = new DynastyState();
+        dynastyState.setCurrentDate(LocalDate.of(2023, 10, 1));
+        dynasty.setCurrentState(dynastyState);
 
         dynastyToCreate.getTeams().forEach(team -> {
             team.setDynastyId(dynasty.getId());

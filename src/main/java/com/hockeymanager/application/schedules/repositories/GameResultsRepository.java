@@ -13,4 +13,11 @@ public interface GameResultsRepository extends JpaRepository<GameResult, String>
             WHERE g.home_team_id = ?1 OR g.away_team_id = ?1
             """, nativeQuery = true)
     List<GameResult> findAllByTeamId(String teamId);
+
+    @Query(value = """
+            SELECT gr.* FROM game_results as gr
+            INNER JOIN games as g ON g.id = gr.game_id
+            WHERE g.dynasty_id = ?1
+            """, nativeQuery = true)
+    List<GameResult> findAllByDynastyId(String dynastyId);
 }

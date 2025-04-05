@@ -1,86 +1,24 @@
-import { format, parseISO } from 'date-fns'; // Using date-fns for easy date formatting
-import { useMemo } from 'react';
+import { format, parseISO } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Adjust path as needed
 import { Separator } from '@/components/ui/separator';
-import Game from '@/generated/com/hockeymanager/application/schedules/models/Game';
-import GameResult from '@/generated/com/hockeymanager/application/schedules/models/GameResult';
-import Team from '@/generated/com/hockeymanager/application/teams/models/Team';
+import { ProcessedGame } from '@/views/dynasty';
 import { ScrollArea } from '../ui/scroll-area';
 
-type ProcessedGame = Game & {
-    isPlayed: boolean;
-    isHomeGame: boolean;
-    opponent: Team;
-    result?: 'W' | 'L' | 'T';
-    score?: string;
-};
-
 interface TeamScheduleProps {
-    userTeam: Team;
-    allGames: Game[];
-    gameResults: GameResult[];
+    processedGames: ProcessedGame[];
     maxPastGames?: number;
     maxUpcomingGames?: number;
     currentDate: string;
 }
 
-function getResultInfo(game: Game, result: GameResult, userTeam: Team): { result: 'W' | 'L' | 'T'; score: string } {
-    const isHome = game.homeTeam!.id === userTeam.id;
-    const userScore = isHome ? result.homeScore : result.awayScore;
-    const opponentScore = isHome ? result.awayScore : result.homeScore;
-    let gameResult: 'W' | 'L' | 'T';
-
-    if (userScore > opponentScore) {
-        gameResult = 'W';
-    } else if (userScore < opponentScore) {
-        gameResult = 'L';
-    } else {
-        gameResult = 'T';
-    }
-
-    const scoreString = `${userScore}-${opponentScore}`;
-
-    return { result: gameResult, score: scoreString };
-}
-
 export function TeamSchedule({
-    userTeam,
-    allGames,
-    gameResults,
+    processedGames,
     maxPastGames = 82,
     maxUpcomingGames = 82,
     currentDate,
 }: TeamScheduleProps) {
-    const processedGames = useMemo(() => {
-        const resultsMap = new Map(gameResults.map((r) => [r.game?.id, r]));
-
-        return allGames
-            .filter((game) => game.homeTeam!.id === userTeam.id || game.awayTeam!.id === userTeam.id)
-            .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
-            .map((game): ProcessedGame => {
-                const resultData = resultsMap.get(game.id!);
-                const isPlayed = !!resultData;
-                const isHomeGame = game.homeTeam!.id === userTeam.id;
-                const opponent = isHomeGame ? game.awayTeam : game.homeTeam;
-                let resultInfo: { result: 'W' | 'L' | 'T'; score: string } | undefined = undefined;
-
-                if (isPlayed && resultData) {
-                    resultInfo = getResultInfo(game, resultData, userTeam);
-                }
-
-                return {
-                    ...game,
-                    isPlayed,
-                    isHomeGame,
-                    opponent: opponent!,
-                    result: resultInfo?.result,
-                    score: resultInfo?.score,
-                };
-            });
-    }, [allGames, gameResults, userTeam]);
-
     const pastGames = processedGames.filter((g) => g.isPlayed).slice(-maxPastGames);
     const upcomingGames = processedGames.filter((g) => !g.isPlayed).slice(0, maxUpcomingGames);
 
@@ -109,7 +47,7 @@ export function TeamSchedule({
     );
 
     return (
-        <Card className="w-full">
+        <Card className="w-full h-80">
             {' '}
             <CardHeader className="p-3">
                 {' '}
@@ -120,7 +58,7 @@ export function TeamSchedule({
                 <CardDescription>Recent results and upcoming games</CardDescription>
             </CardHeader>
             <CardContent className="p-3 text-sm">
-                <ScrollArea className="h-64">
+                <ScrollArea className="h-52">
                     {' '}
                     {pastGames.length > 0 && (
                         <>
