@@ -17,14 +17,6 @@ import { DynastiesService, PatchesService } from '@/generated/endpoints';
 import { useState } from 'react';
 import TeamCombobox from './team-combobox';
 
-declare global {
-    interface Window {
-        electronAPI?: {
-            openFileDialog: () => Promise<{ canceled: boolean; filePaths: string[] }>;
-        };
-    }
-}
-
 interface CreatingDynastyDialogProps {
     setDynastyId: (dynastyId: string) => void;
 }
