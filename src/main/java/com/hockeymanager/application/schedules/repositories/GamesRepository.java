@@ -9,4 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface GamesRepository extends JpaRepository<Game, String>, JpaSpecificationExecutor<Game> {
     @Query(value = "SELECT * FROM games WHERE home_team_id = ?1 OR away_team_id = ?1", nativeQuery = true)
     List<Game> findAllByTeamId(String teamId);
+
+    @Query(value = "SELECT * FROM games WHERE dynasty_id = ?1", nativeQuery = true)
+    List<Game> findAllByDynastyId(String dynastyId);
 }

@@ -1,89 +1,24 @@
-import { format, parseISO } from 'date-fns'; // Using date-fns for easy date formatting
-import { useMemo } from 'react';
+import { format, parseISO } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Adjust path as needed
 import { Separator } from '@/components/ui/separator';
-import Game from '@/generated/com/hockeymanager/application/schedules/models/Game';
-import Team from '@/generated/com/hockeymanager/application/teams/models/Team';
+import { ProcessedGame } from '@/views/dynasty';
 import { ScrollArea } from '../ui/scroll-area';
 
-type GameResult = {
-    gameId: string;
-    homeScore: number;
-    awayScore: number;
-};
-
-type ProcessedGame = Game & {
-    isPlayed: boolean;
-    isHomeGame: boolean;
-    opponent: Team;
-    result?: 'W' | 'L' | 'T';
-    score?: string;
-};
-
 interface TeamScheduleProps {
-    userTeam: Team;
-    allGames: Game[];
-    gameResults: GameResult[];
+    processedGames: ProcessedGame[];
     maxPastGames?: number;
     maxUpcomingGames?: number;
-}
-
-function getResultInfo(game: Game, result: GameResult, userTeam: Team): { result: 'W' | 'L' | 'T'; score: string } {
-    const isHome = game.homeTeam!.id === userTeam.id;
-    const userScore = isHome ? result.homeScore : result.awayScore;
-    const opponentScore = isHome ? result.awayScore : result.homeScore;
-    let gameResult: 'W' | 'L' | 'T';
-
-    if (userScore > opponentScore) {
-        gameResult = 'W';
-    } else if (userScore < opponentScore) {
-        gameResult = 'L';
-    } else {
-        gameResult = 'T';
-    }
-
-    const scoreString = `${userScore}-${opponentScore}`;
-
-    return { result: gameResult, score: scoreString };
+    currentDate: string;
 }
 
 export function TeamSchedule({
-    userTeam,
-    allGames,
-    gameResults,
-    maxPastGames = 3,
-    maxUpcomingGames = 5,
+    processedGames,
+    maxPastGames = 82,
+    maxUpcomingGames = 82,
+    currentDate,
 }: TeamScheduleProps) {
-    const processedGames = useMemo(() => {
-        const resultsMap = new Map(gameResults.map((r) => [r.gameId, r]));
-
-        return allGames
-            .filter((game) => game.homeTeam!.id === userTeam.id || game.awayTeam!.id === userTeam.id)
-            .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
-            .map((game): ProcessedGame => {
-                const resultData = resultsMap.get(game.id!);
-                const isPlayed = !!resultData;
-                const isHomeGame = game.homeTeam!.id === userTeam.id;
-                const opponent = isHomeGame ? game.awayTeam : game.homeTeam;
-                let resultInfo: { result: 'W' | 'L' | 'T'; score: string } | undefined = undefined;
-
-                if (isPlayed && resultData) {
-                    resultInfo = getResultInfo(game, resultData, userTeam);
-                }
-
-                return {
-                    ...game,
-                    isPlayed,
-                    isHomeGame,
-                    opponent: opponent!,
-                    result: resultInfo?.result,
-                    score: resultInfo?.score,
-                };
-            });
-    }, [allGames, gameResults, userTeam]);
-
     const pastGames = processedGames.filter((g) => g.isPlayed).slice(-maxPastGames);
     const upcomingGames = processedGames.filter((g) => !g.isPlayed).slice(0, maxUpcomingGames);
 
@@ -92,7 +27,7 @@ export function TeamSchedule({
             <div className="flex items-center space-x-2">
                 <span className="w-12 text-muted-foreground font-medium">{format(parseISO(game.date!), 'MMM d')}</span>
                 <span>{game.isHomeGame ? 'vs' : '@'}</span>
-                <span className="font-semibold">{game.opponent.abbreviation}</span>
+                <span className="font-semibold">{game.opponent.name}</span>
             </div>
 
             <div>
@@ -112,15 +47,18 @@ export function TeamSchedule({
     );
 
     return (
-        <Card className="w-full">
+        <Card className="w-full h-80">
             {' '}
             <CardHeader className="p-3">
                 {' '}
-                <CardTitle className="text-lg"> Game Schedule</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                    <div>Game Schedule</div>
+                    <div className="text-sm text-muted-foreground">{format(parseISO(currentDate), 'MMMM d, yyyy')}</div>
+                </CardTitle>
                 <CardDescription>Recent results and upcoming games</CardDescription>
             </CardHeader>
             <CardContent className="p-3 text-sm">
-                <ScrollArea className="h-64">
+                <ScrollArea className="h-52">
                     {' '}
                     {pastGames.length > 0 && (
                         <>
