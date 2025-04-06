@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -28,10 +30,12 @@ public class Game extends BaseEntity {
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "home_team_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Team homeTeam;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "away_team_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Team awayTeam;
 
     private LocalDate date;

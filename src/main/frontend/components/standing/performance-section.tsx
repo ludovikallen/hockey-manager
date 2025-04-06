@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProcessedGame } from '@/views/dynasty';
 import { BarChart3, TrendingUp, Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -58,7 +58,7 @@ export function PerformanceSection({ processedGames }: PerformanceSectionProps) 
             const awayWins = awayGames.filter((result) => result.result === 'W').length;
             const awayLosses = awayGames.filter((result) => result.result === 'L').length;
 
-            const last10Games = processedGames.slice(-10);
+            const last10Games = processedGames.filter((game) => game.result != undefined).slice(-10);
             const last10Wins = last10Games.filter((result) => result.result === 'W').length;
             const last10Losses = last10Games.filter((result) => result.result === 'L').length;
 
@@ -90,7 +90,6 @@ export function PerformanceSection({ processedGames }: PerformanceSectionProps) 
             <Card className="lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Team Performance Overview</CardTitle>
-                    <CardDescription></CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="text-sm text-muted-foreground">Loading...</div>
@@ -103,7 +102,6 @@ export function PerformanceSection({ processedGames }: PerformanceSectionProps) 
         <Card className="lg:col-span-2 h-80">
             <CardHeader>
                 <CardTitle>Team Performance Overview</CardTitle>
-                <CardDescription></CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="grid gap-4 grid-cols-1 md:grid-cols-3">

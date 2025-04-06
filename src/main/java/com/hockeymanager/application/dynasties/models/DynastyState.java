@@ -10,4 +10,6 @@ import lombok.Setter;
 @Embeddable
 public class DynastyState {
     private LocalDate currentDate;
+
+    private int currentTurnId = 1;
 }

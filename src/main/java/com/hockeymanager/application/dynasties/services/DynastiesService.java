@@ -4,8 +4,11 @@ import com.hockeymanager.application.dynasties.models.CreateDynastyDto;
 import com.hockeymanager.application.dynasties.models.Dynasty;
 import com.hockeymanager.application.dynasties.models.DynastyState;
 import com.hockeymanager.application.dynasties.repositories.DynastiesRepository;
+import com.hockeymanager.application.news.models.News;
+import com.hockeymanager.application.news.repositories.NewsRepository;
 import com.hockeymanager.application.players.repositories.GoaliesRepository;
 import com.hockeymanager.application.players.repositories.PlayersRepository;
+import com.hockeymanager.application.schedules.repositories.GameResultsRepository;
 import com.hockeymanager.application.schedules.repositories.GamesRepository;
 import com.hockeymanager.application.schedules.services.SchedulesService;
 import com.hockeymanager.application.teams.repositories.TeamsRepository;
@@ -33,6 +36,8 @@ public class DynastiesService {
     private final TeamsRepository teamsRepository;
     private final SchedulesService schedulesService;
     private final GamesRepository gamesRepository;
+    private final NewsRepository newsRepository;
+    private final GameResultsRepository gameResultsRepository;
 
     public List<@NonNull Dynasty> findAll() {
         return dynastiesRepository.findAll();
@@ -81,6 +86,14 @@ public class DynastiesService {
         });
         goaliesRepository.saveAll(dynastyToCreate.getGoalies());
 
+        var news = new News();
+        news.setTurnId(1);
+        news.setTitle("The " + chosenTeam.getName() + " have finally done it");
+        news.setDescription(chosenTeam.getName()
+                + " have found their guy. They will act as an owner, GM and even as a coach. Let's see if they can build the greatest dynasty of all time!");
+        news.setDynastyId(dynasty.getId());
+        newsRepository.save(news);
+
         return dynasty.getId();
     }
 
@@ -90,9 +103,17 @@ public class DynastiesService {
 
     @Transactional
     public void deleteById(String id) {
-        dynastiesRepository.deleteById(id);
+        gameResultsRepository.deleteAllByDynastyId(id);
+
+        gamesRepository.deleteAllByDynastyId(id);
+
         playersRepository.deleteAllByDynastyId(id);
         goaliesRepository.deleteAllByDynastyId(id);
+
         teamsRepository.deleteAllByDynastyId(id);
+
+        newsRepository.deleteAllByDynastyId(id);
+
+        dynastiesRepository.deleteById(id);
     }
 }
