@@ -8,6 +8,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -18,6 +20,7 @@ public class GameResult extends BaseEntity {
 
     @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Game game;
 
     private int homeScore;

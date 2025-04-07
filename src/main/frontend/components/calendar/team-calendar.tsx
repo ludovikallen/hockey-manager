@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Adjust path as needed
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Adjust path as needed
 import { Separator } from '@/components/ui/separator';
 import { ProcessedGame } from '@/views/dynasty';
 import { ScrollArea } from '../ui/scroll-area';
@@ -23,7 +23,7 @@ export function TeamSchedule({
     const upcomingGames = processedGames.filter((g) => !g.isPlayed).slice(0, maxUpcomingGames);
 
     const renderGameItem = (game: ProcessedGame) => (
-        <div id={game.id!} className="flex justify-between items-center py-1 text-sm">
+        <div key={game.id} className="flex justify-between items-center py-1 text-sm">
             <div className="flex items-center space-x-2">
                 <span className="w-12 text-muted-foreground font-medium">{format(parseISO(game.date!), 'MMM d')}</span>
                 <span>{game.isHomeGame ? 'vs' : '@'}</span>
@@ -47,36 +47,37 @@ export function TeamSchedule({
     );
 
     return (
-        <Card className="w-full h-80">
+        <Card className="w-full">
             {' '}
-            <CardHeader className="p-3">
+            <CardHeader className="pb-2">
                 {' '}
                 <CardTitle className="flex items-center justify-between">
                     <div>Game Schedule</div>
                     <div className="text-sm text-muted-foreground">{format(parseISO(currentDate), 'MMMM d, yyyy')}</div>
                 </CardTitle>
-                <CardDescription>Recent results and upcoming games</CardDescription>
             </CardHeader>
-            <CardContent className="p-3 text-sm">
-                <ScrollArea className="h-52">
-                    {' '}
-                    {pastGames.length > 0 && (
-                        <>
-                            <h4 className="text-xs uppercase text-muted-foreground mb-1">Recent Results</h4>
-                            {pastGames.map(renderGameItem)}
-                            {upcomingGames.length > 0 && <Separator className="my-2" />}
-                        </>
-                    )}
-                    {upcomingGames.length > 0 && (
-                        <>
-                            <h4 className="text-xs uppercase text-muted-foreground mb-1">Upcoming Games</h4>
-                            {upcomingGames.map(renderGameItem)}
-                        </>
-                    )}
-                    {pastGames.length === 0 && upcomingGames.length === 0 && (
-                        <p className="text-muted-foreground text-center py-4">No games scheduled.</p>
-                    )}
-                </ScrollArea>
+            <CardContent className="p-0">
+                <div className="px-6 pt-4">
+                    <ScrollArea className="flex h-[400px]">
+                        {' '}
+                        {pastGames.length > 0 && (
+                            <>
+                                <h4 className="text-xs uppercase text-muted-foreground mb-1">Recent Results</h4>
+                                {pastGames.map(renderGameItem)}
+                                {upcomingGames.length > 0 && <Separator className="my-2" />}
+                            </>
+                        )}
+                        {upcomingGames.length > 0 && (
+                            <>
+                                <h4 className="text-xs uppercase text-muted-foreground mb-1">Upcoming Games</h4>
+                                {upcomingGames.map(renderGameItem)}
+                            </>
+                        )}
+                        {pastGames.length === 0 && upcomingGames.length === 0 && (
+                            <p className="text-muted-foreground text-center py-4">No games scheduled.</p>
+                        )}
+                    </ScrollArea>
+                </div>
             </CardContent>
         </Card>
     );
