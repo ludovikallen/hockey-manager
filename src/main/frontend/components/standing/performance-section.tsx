@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProcessedGame } from '@/views/dynasty';
 import { BarChart3, TrendingUp, Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -24,12 +24,14 @@ function getStreak(processedGames: ProcessedGame[]): string {
     const lastGame = processedGames[processedGames.length - 1];
     if (!lastGame || lastGame.result == null) return '-';
 
-    const streakLength = processedGames.reduceRight((count, game) => {
-        if (game.result === lastGame.result) {
-            return count + 1;
+    let streakLength = 0;
+    for (let i = processedGames.length - 1; i >= 0; i--) {
+        if (processedGames[i].result === lastGame.result) {
+            streakLength++;
+        } else {
+            break;
         }
-        return count;
-    }, 0);
+    }
 
     return `${streakLength > 1 ? streakLength : ''}${lastGame.result ?? '-'}`;
 }
@@ -56,7 +58,7 @@ export function PerformanceSection({ processedGames }: PerformanceSectionProps) 
             const awayWins = awayGames.filter((result) => result.result === 'W').length;
             const awayLosses = awayGames.filter((result) => result.result === 'L').length;
 
-            const last10Games = processedGames.slice(-10);
+            const last10Games = processedGames.filter((game) => game.result != undefined).slice(-10);
             const last10Wins = last10Games.filter((result) => result.result === 'W').length;
             const last10Losses = last10Games.filter((result) => result.result === 'L').length;
 
@@ -64,7 +66,7 @@ export function PerformanceSection({ processedGames }: PerformanceSectionProps) 
             const awayRecord = `${awayWins}-${awayLosses}`;
             const last10Record = `${last10Wins}-${last10Losses}`;
 
-            const streak = getStreak(processedGames);
+            const streak = getStreak(processedGames.filter((game) => game.result != undefined));
 
             setTeamStats({
                 record: `${wins}-${losses}`,
@@ -88,7 +90,6 @@ export function PerformanceSection({ processedGames }: PerformanceSectionProps) 
             <Card className="lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Team Performance Overview</CardTitle>
-                    <CardDescription></CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="text-sm text-muted-foreground">Loading...</div>
@@ -101,7 +102,6 @@ export function PerformanceSection({ processedGames }: PerformanceSectionProps) 
         <Card className="lg:col-span-2 h-80">
             <CardHeader>
                 <CardTitle>Team Performance Overview</CardTitle>
-                <CardDescription></CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="grid gap-4 grid-cols-1 md:grid-cols-3">

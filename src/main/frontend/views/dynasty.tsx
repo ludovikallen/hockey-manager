@@ -1,12 +1,20 @@
 import { TeamSchedule } from '@/components/calendar/team-calendar';
+import { NewsBox } from '@/components/news/news-box';
 import { LeagueStanding } from '@/components/standing/league-standing';
 import { PerformanceSection } from '@/components/standing/performance-section';
 import { Button } from '@/components/ui/button';
 import Dynasty from '@/generated/com/hockeymanager/application/dynasties/models/Dynasty';
+import News from '@/generated/com/hockeymanager/application/news/models/News';
 import Game from '@/generated/com/hockeymanager/application/schedules/models/Game';
 import GameResult from '@/generated/com/hockeymanager/application/schedules/models/GameResult';
 import Team from '@/generated/com/hockeymanager/application/teams/models/Team';
-import { DynastiesService, GameResultsService, GamesService, TurnsEngineService } from '@/generated/endpoints';
+import {
+    DynastiesService,
+    GameResultsService,
+    GamesService,
+    NewsService,
+    TurnsEngineService,
+} from '@/generated/endpoints';
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -138,6 +146,7 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
     const [allGamesInSeason, setAllGamesInSeason] = useState<Game[]>([]);
     const [gameResults, setGameResults] = useState<GameResult[]>([]);
     const [leagueStandings, setLeagueStandings] = useState<LeagueStandings[]>([]);
+    const [news, setNews] = useState<News[]>([]);
     const [simulating, setSimulating] = useState(false);
 
     const fetchDynasty = async () => {
@@ -145,6 +154,7 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
         const games = await GamesService.findAllByTeamId(response?.team?.id);
         const results = await GameResultsService.findAllByDynastyId(dynastyId);
         const allGames = await GamesService.findAllByDynastyId(dynastyId);
+        const currentNews = await NewsService.findAllByDynastyId(dynastyId);
 
         const seen = new Set();
         const teams: Team[] = [];
@@ -165,6 +175,7 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
         setDynasty(response!);
         setAllGamesInSeason(games!);
         setGameResults(results!);
+        setNews(currentNews);
     };
 
     useEffect(() => {
@@ -240,13 +251,13 @@ export default function MainGameView({ dynastyId, setDynastyId }: MainGameViewPr
                 </Button>
             </div>
             <div className="grid grid-cols-4 gap-8 w-full h-full px-8">
-                <div className="col-span-3 flex flex-col gap-8 ">
+                <div className="col-span-3 flex flex-col gap-8">
                     <PerformanceSection processedGames={processedGames} />
                     <LeagueStanding leagueStandings={leagueStandings} userTeam={dynasty.team!} />
                 </div>
-                <div className="col-span-1 flex flex-col gap-8 justify-between items-end overflow-hidden">
+                <div className="col-span-1 flex flex-col gap-8">
+                    <NewsBox news={news} setNews={setNews} />
                     <TeamSchedule processedGames={processedGames} currentDate={dynasty.currentState!.currentDate!} />
-                    <div></div>
                 </div>
             </div>
         </div>

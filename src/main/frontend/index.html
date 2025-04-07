@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Hockey Manager</title>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const removeLoadingIndicator = () => {
+          const loadingIndicator = document.getElementsByClassName("v-loading-indicator")[0];
+          if (loadingIndicator !== undefined) {
+            loadingIndicator.remove();
+          }
+        };
+    
+        removeLoadingIndicator();
+    
+        const observer = new MutationObserver(() => {
+          removeLoadingIndicator();
+        });
+    
+        observer.observe(document.body, { childList: true, subtree: true });
+      });
+    </script>
     <style>
       body {
         margin: 0;
