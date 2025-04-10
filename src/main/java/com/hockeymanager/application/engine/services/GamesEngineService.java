@@ -1,13 +1,23 @@
 package com.hockeymanager.application.engine.services;
 
 import com.hockeymanager.application.engine.models.GameResult;
+import com.hockeymanager.application.engine.models.goap.Action;
+import com.hockeymanager.application.engine.models.goap.GlobalGameState;
+import com.hockeymanager.application.engine.models.goap.Planner;
+import com.hockeymanager.application.engine.models.goap.PlayerGameState;
+import com.hockeymanager.application.engine.models.goap.actions.ChasePuckAction;
+import com.hockeymanager.application.engine.models.goap.actions.ScoreGoalAction;
+import com.hockeymanager.application.engine.models.goap.actions.TakePuckAction;
 import com.hockeymanager.application.players.models.Player;
+import com.hockeymanager.application.players.models.Position;
 import com.hockeymanager.application.players.repositories.PlayersRepository;
 import com.hockeymanager.application.teams.models.Team;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.BrowserCallable;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,39 +27,58 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class GamesEngineService {
     private PlayersRepository playersRepository;
-    private static final Random random = new Random();
 
     public GameResult simulateGame(Team homeTeam, Team awayTeam) {
-        List<Player> homeTeamPlayers = playersRepository.findAllByTeamId(homeTeam.getId());
-        List<Player> awayTeamPlayers = playersRepository.findAllByTeamId(awayTeam.getId());
+        GlobalGameState.resetGame();
 
-        double homeTeamOverall = homeTeamPlayers.stream().map(player -> player.getCurrentAbility()).reduce(0,
-                (currentTotal, currentAbility) -> currentTotal + currentAbility) / homeTeamPlayers.size();
-        double awayTeamOverall = awayTeamPlayers.stream().map(player -> player.getCurrentAbility()).reduce(0,
-                (currentTotal, currentAbility) -> currentTotal + currentAbility) / awayTeamPlayers.size();
+        List<Player> homePlayers = playersRepository.findAllByTeamId(homeTeam.getId()).stream()
+                .filter(player -> player.getPosition() != Position.GOALIE) // Enlever les gardiens
+                .sorted(Comparator.comparingInt(Player::getCurrentAbility).reversed()) // Classer en ordre décroissant
+                .limit(5) // Ressortir les 5 meilleurs joueurs de l'équipe
+                .collect(Collectors.toList());
+        List<Player> awayPlayers = playersRepository.findAllByTeamId(awayTeam.getId()).stream()
+                .filter(player -> player.getPosition() != Position.GOALIE) // Enlever les gardiens
+                .sorted(Comparator.comparingInt(Player::getCurrentAbility).reversed()) // Classer en ordre décroissant
+                .limit(5) // Ressortir les 5 meilleurs joueurs de l'équipe
+                .collect(Collectors.toList());
 
-        double seasonAverageGoalsPerGamePerTeam = 3.12;
+        List<Action> actions = List.of(new ChasePuckAction(), new TakePuckAction(), new ScoreGoalAction());
+        Planner planner = new Planner();
 
-        double strengthRatioHome = homeTeamOverall / (homeTeamOverall + awayTeamOverall);
-        double strengthRatioAway = 1 - strengthRatioHome;
+        Map<String, Boolean> goal = Map.of("scored", true);
 
-        double meanHome = seasonAverageGoalsPerGamePerTeam * 2 * strengthRatioHome;
-        double meanAway = seasonAverageGoalsPerGamePerTeam * 2 * strengthRatioAway;
-        
-        double stdDev = 1.66; // Ajustable pour plus ou moins de variance
-
-        int homeScore = (int) Math.max(0, Math.round(random.nextGaussian() * stdDev + meanHome));
-        int awayScore = (int) Math.max(0, Math.round(random.nextGaussian() * stdDev + meanAway));
-
-        if (homeScore == awayScore) {
-            boolean homeWins = random.nextDouble() < strengthRatioHome;
-            if (homeWins) {
-                homeScore++;
-            } else {
-                awayScore++;
+        while (!GlobalGameState.gameEnded) {
+            for (Player player : homePlayers) {
+                runPlayerLogic("T1-" + player.getId(), actions, planner, goal);
+                if (GlobalGameState.gameEnded) {
+                    break;
+                }
+            }
+            for (Player player : awayPlayers) {
+                runPlayerLogic("T2-" + player.getId(), actions, planner, goal);
+                if (GlobalGameState.gameEnded) {
+                    break;
+                }
             }
         }
 
-        return new GameResult(homeScore, awayScore);
+        return new GameResult(GlobalGameState.team1Score, GlobalGameState.team2Score);
+    }
+
+    private void runPlayerLogic(String playerId, List<Action> actions, Planner planner, Map<String, Boolean> goal) {
+        PlayerGameState state = new PlayerGameState();
+        state.put("hasPuck", false);
+        state.put("closeToPuck", false);
+        state.put("scored", false);
+
+        List<Action> plan = planner.plan(state, goal, actions, playerId);
+        if (plan != null) {
+            for (Action action : plan) {
+                if (!action.perform(playerId)) {
+                    break;
+                }
+                action.getEffects().forEach(state::put);
+            }
+        }
     }
 }
