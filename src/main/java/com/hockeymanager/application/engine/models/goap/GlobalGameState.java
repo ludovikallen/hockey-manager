@@ -18,10 +18,12 @@ public class GlobalGameState {
     }
 
     public synchronized void scoreGoal(int team) {
-        if (team == 1)
+        if (team == 1) {
             team1Score++;
-        else
+        } else {
             team2Score++;
+        }
+
         resetPuck(team);
     }
 
