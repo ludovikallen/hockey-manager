@@ -14,8 +14,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Planner {
-    public List<Action> plan(PlayerGameState initial, Map<String, Boolean> goal, List<Action> actions,
-            String playerId) {
+    public List<Action> plan(PlayerGameState initial, Map<String, Boolean> goal, List<Action> actions, String playerId,
+            GlobalGameState ggs) {
         Queue<Node> open = new PriorityQueue<>(Comparator.comparingDouble(n -> n.cost));
         open.add(new Node(null, null, initial, 0));
 
@@ -27,7 +27,8 @@ public class Planner {
             }
 
             for (Action action : actions) {
-                if (action.isApplicable(current.state) && action.checkProceduralPrecondition(current.state, playerId)) {
+                if (action.isApplicable(current.state)
+                        && action.checkProceduralPrecondition(current.state, ggs, playerId)) {
                     PlayerGameState newState = current.state.copy();
                     action.getEffects().forEach(newState::put);
                     Node newNode = new Node(action, current, newState, current.cost + action.getCost());

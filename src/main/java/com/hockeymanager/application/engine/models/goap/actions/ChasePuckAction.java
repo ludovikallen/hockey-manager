@@ -1,7 +1,10 @@
 package com.hockeymanager.application.engine.models.goap.actions;
 
 import com.hockeymanager.application.engine.models.goap.Action;
+import com.hockeymanager.application.engine.models.goap.Agent;
+import com.hockeymanager.application.engine.models.goap.GlobalGameState;
 import com.hockeymanager.application.engine.models.goap.PlayerGameState;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,13 +18,12 @@ public class ChasePuckAction extends Action {
     }
 
     @Override
-    public boolean checkProceduralPrecondition(PlayerGameState playerGameState,
-            String playerId) {
+    public boolean checkProceduralPrecondition(PlayerGameState pgs, GlobalGameState ggs, String playerId) {
         return true;
     }
 
     @Override
-    public boolean perform(String playerId) {
+    public boolean perform(Agent agent, GlobalGameState ggs, List<Agent> allAgents) {
         return true;
     }
 }

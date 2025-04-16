@@ -1,37 +1,31 @@
 package com.hockeymanager.application.engine.models.goap;
 
 public class GlobalGameState {
-    public static boolean puckTaken = false;
-    public static int team1Score = 0;
-    public static int team2Score = 0;
-    public static int puckOwnerTeam = 1;
-    public static boolean gameEnded = false;
+    public boolean puckTaken = false;
+    public int team1Score = 0;
+    public int team2Score = 0;
+    public int puckOwnerTeam = 1;
+    public boolean gameEnded = false;
+    public String puckHolderId = null;
+    public int team1Shots = 0;
+    public int team2Shots = 0;
+    public final int MAX_SHOTS = 2;
 
-    public static void resetPuck(int scoringTeam) {
+    public synchronized void resetPuck(int scoringTeam) {
         puckTaken = false;
-        puckOwnerTeam = (scoringTeam == 1) ? 2 : 1; // Donne la rondelle à l'équipe qui s'est fait scorer.
+        puckHolderId = null;
+        puckOwnerTeam = (scoringTeam == 1) ? 2 : 1;
     }
 
-    public static void scoreGoal(int team) {
-        if (team == 1) {
+    public synchronized void scoreGoal(int team) {
+        if (team == 1)
             team1Score++;
-        } else {
+        else
             team2Score++;
-        }
-
-        if (team1Score >= 10 || team2Score >= 10) { // Arrête la game après 10 buts, sinon je n'avais pas de condition
-                                                    // d'arrêt (pour l'instant)
-            gameEnded = true;
-        }
-
         resetPuck(team);
     }
 
-    public static void resetGame() {
-        puckTaken = false;
-        team1Score = 0;
-        team2Score = 0;
-        puckOwnerTeam = 1;
-        gameEnded = false;
+    public boolean isGameOver() {
+        return team1Shots >= MAX_SHOTS || team2Shots >= MAX_SHOTS;
     }
 }
